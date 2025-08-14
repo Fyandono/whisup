@@ -41,7 +41,7 @@ class WhispsPage extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: AppColors.blueBackground2,
+                    color: AppColors.greyBorder,
                     width: 2,
                   ),
                 ),

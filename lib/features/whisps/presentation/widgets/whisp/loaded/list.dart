@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:whisup/const/colors.dart';
 import 'package:whisup/features/whisps/data/model/whisp.dart';
+import 'package:whisup/features/whisps/presentation/blocs/react/react_bloc.dart';
 import 'package:whisup/features/whisps/presentation/blocs/whisps/whisps_bloc.dart';
 import 'package:whisup/features/whisps/presentation/widgets/whisp/loaded/item.dart';
 import 'package:whisup/features/widgets/text/text.dart';
@@ -33,7 +34,10 @@ class MyWhispsLoaded extends StatelessWidget {
           itemCount: listObject.length + 1,
           itemBuilder: (context, index) {
             if (index < listObject.length) {
-              return MyWhispItemLoaded(object: listObject[index]);
+              return BlocProvider(
+                create: (context) => ReactBloc(),
+                child: MyWhispItemLoaded(object: listObject[index]),
+              );
             } else {
               return Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 48),

@@ -7,6 +7,7 @@ import 'package:whisup/features/whisps/presentation/blocs/react/react_bloc.dart'
 import 'package:whisup/features/widgets/highlight_text/highlight_text.dart';
 import 'package:whisup/features/widgets/preview_avatar/preview_avatar.dart';
 import 'package:whisup/features/widgets/text/text.dart';
+import 'package:whisup/util/emoticon_count_cubit.dart';
 
 class MyWhispItemLoaded extends StatelessWidget {
   const MyWhispItemLoaded({required this.object, super.key});
@@ -15,9 +16,10 @@ class MyWhispItemLoaded extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void onTap(int id, String emoji) {
-      context.read<ReactBloc>().add(ReactComment(id: id, comment: emoji));
-    }
+    // void onTap(int id, String emoji, EmoticonCountCubit cubit) {
+    //   // Send to server (ignore response handling here)
+    //   context.read<ReactBloc>().add(ReactComment(id: id, comment: emoji));
+    // }
 
     String formatTimestamp(String isoString) {
       try {
@@ -28,107 +30,116 @@ class MyWhispItemLoaded extends StatelessWidget {
       }
     }
 
-    return BlocBuilder<ReactBloc, ReactState>(
-      builder: (context, state) {
-        return Container(
-          key: Key(object.id.toString()),
-          margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            // borderRadius: BorderRadius.circular(16),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: AppColors.greyBorder.withValues(alpha: 0.4),
-            //     blurRadius: 4,
-            //     offset: const Offset(0, 1),
-            //   ),
-            // ],
-            // border: Border.all(color: AppColors.greyBorder),
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.greyBorder.withValues(alpha: 0.5),
-                width: 1,
+    return BlocProvider(
+      create:
+          (_) => EmoticonCountCubit({
+            for (var r in object.reactions) r.keys.first: r.values.first,
+          }),
+      child: BlocBuilder<EmoticonCountCubit, EmoticonCountState>(
+        builder: (context, state) {
+          final cubit = context.read<EmoticonCountCubit>();
+
+          return Container(
+            key: Key(object.id.toString()),
+            margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: AppColors.greyBorder.withValues(alpha: 0.5),
+                  width: 1,
+                ),
               ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Header
-              Row(
-                children: [
-                  PixelAvatarPreview(pixels: object.avatar, size: 24),
-                  SizedBox(width: 6),
-                  Expanded(
-                    child: MyText(
-                      text: "@${object.username}",
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.greyText,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Header
+                Row(
+                  children: [
+                    PixelAvatarPreview(pixels: object.avatar, size: 24),
+                    SizedBox(width: 6),
+                    Expanded(
+                      child: MyText(
+                        text: "@${object.username}",
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.greyText,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 4),
-                  MyText(
-                    text: formatTimestamp(object.createdAt),
-                    fontSize: 11,
-                    color: AppColors.greyText2,
-                  ),
-                  SizedBox(width: 6),
-                  MyHighlightText(
-                    text: object.nearOrPublic,
-                    fontColor: object.fontColor,
-                    backgroundColor: object.backgroundColor,
-                    borderColor: object.borderColor,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              /// Message
-              MyText(
-                text: object.message,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-              const SizedBox(height: 12),
-
-              /// Reactions
-              if (object.reactions.isNotEmpty)
-                Wrap(
-                  spacing: 12,
-                  children:
-                      object.reactions.map((r) {
-                        final emoji = r.keys.first;
-                        final count = r[emoji];
-                        return InkWell(
-                          onTap: () => onTap(object.id, emoji),
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.greyBackgrounReaction,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                MyText(text: emoji, fontSize: 14),
-                                const SizedBox(width: 4),
-                                MyText(text: count.toString(), fontSize: 12),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                    SizedBox(width: 4),
+                    MyText(
+                      text: formatTimestamp(object.createdAt),
+                      fontSize: 11,
+                      color: AppColors.greyText2,
+                    ),
+                    SizedBox(width: 6),
+                    MyHighlightText(
+                      text: object.nearOrPublic,
+                      fontColor: object.fontColor,
+                      backgroundColor: object.backgroundColor,
+                      borderColor: object.borderColor,
+                    ),
+                  ],
                 ),
-            ],
-          ),
-        );
-      },
+                const SizedBox(height: 8),
+
+                /// Message
+                MyText(
+                  text: object.message,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                const SizedBox(height: 12),
+
+                /// Reactions
+                if (state.counts.isNotEmpty)
+                  Wrap(
+                    spacing: 12,
+                    children:
+                        state.counts.entries.map((entry) {
+                          final emoji = entry.key;
+                          final count = entry.value;
+                          final isSelected = state.selectedEmoji == emoji;
+
+                          return InkWell(
+                            onTap: () {
+                              cubit.react(emoji);
+                              context.read<ReactBloc>().add(
+                                ReactComment(id: object.id, comment: emoji),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    isSelected
+                                        ? Colors.blue.withValues(alpha: 0.2)
+                                        : AppColors.greyBackgrounReaction,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  MyText(text: emoji, fontSize: 14),
+                                  const SizedBox(width: 4),
+                                  MyText(text: count.toString(), fontSize: 12),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -33,7 +33,7 @@ class WhispsRepository {
           "❤️": random.nextInt(5),
           "😂": random.nextInt(5),
           "😮": random.nextInt(5),
-          "relate": random.nextInt(10),
+          "🤝": random.nextInt(5),
         };
 
         /// Generate random avatar (7x7 grid, ~10–15 pixels filled)
