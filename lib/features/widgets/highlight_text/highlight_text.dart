@@ -15,7 +15,7 @@ class MyHighlightText extends StatelessWidget {
     this.borderColor,
     this.padding = const EdgeInsets.symmetric(
       vertical: 2,
-      horizontal: 4,
+      horizontal: 6,
     ),
     super.key,
   });
@@ -23,11 +23,12 @@ class MyHighlightText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // alignment: Alignment.center,
       padding: padding,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(6),
-        border: borderColor != null ? Border.all(color: borderColor!) : null,
+        // border: borderColor != null ? Border.all(color: borderColor!) : null,
       ),
       child: MyText(
         text: text,

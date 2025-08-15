@@ -28,9 +28,12 @@ class WhispsPage extends StatelessWidget {
     // load list
     bloc.add(LoadWhisps());
 
-    void method(String value) {}
-
     final textController = TextEditingController();
+
+    void method(String value) {
+      bloc.add(AddWhisp(message: value));
+      textController.clear();
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -40,10 +43,7 @@ class WhispsPage extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(
-                    color: AppColors.greyBorder,
-                    width: 2,
-                  ),
+                  bottom: BorderSide(color: AppColors.greyBorder, width: 2),
                 ),
               ),
               child: BlocBuilder<ProfileBloc, ProfileState>(

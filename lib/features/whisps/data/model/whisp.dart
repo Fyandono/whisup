@@ -48,18 +48,18 @@ class CardWhispModel {
   }
 
   Color get fontColor {
-    return nearOrPublic == "Public" ? AppColors.blueText : AppColors.greenText2;
+    return nearOrPublic == "Public" ? AppColors.white : AppColors.white;
   }
 
   Color get backgroundColor {
     return nearOrPublic == "Public"
-        ? AppColors.blueBackground2
-        : AppColors.greenBackground2;
+        ? AppColors.blueBackground
+        : AppColors.greenText;
   }
 
   Color get borderColor {
     return nearOrPublic == "Public"
-        ? AppColors.blueBorder
-        : AppColors.greenText2.withValues(alpha: 0.5);
+        ? AppColors.white
+        : AppColors.white;
   }
 }

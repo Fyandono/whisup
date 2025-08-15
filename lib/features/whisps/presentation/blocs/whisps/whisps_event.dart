@@ -15,3 +15,13 @@ class LoadWhisps extends WhispsEvent {
 class LoadMoreWhisps extends WhispsEvent {}
 
 class RefreshWhisps extends WhispsEvent {}
+
+class AddWhisp extends WhispsEvent {
+  final String message;
+    const AddWhisp({
+      required this.message
+    });
+
+  @override
+  List<Object> get props => [message];
+}

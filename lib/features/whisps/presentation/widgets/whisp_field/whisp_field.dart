@@ -63,7 +63,9 @@ class WhispField extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () => {
+                        method(controller.text)
+                      },
                       child: const Icon(
                         Icons.send,
                         color: AppColors.blueIcon,
